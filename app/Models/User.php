@@ -38,7 +38,7 @@ class User
     }
 
     public function login(){
-        return $user = DB::table('user')
+        return DB::table('user')
             ->join('role','user.role_id','=','role.id')
             ->where('user.email','=',$this->email)
             ->whereNotNull('user.activated_at')
@@ -49,5 +49,21 @@ class User
 //        }else{
 //            return "false";
 //        }
+    }
+
+    public function activate(){
+        $created_time = date('Y-m-d H:i:s');
+        try{
+            return DB::table('user')
+                ->where([
+                    ['email','=',$this->email],
+                    ['activation_hash','=',$this->activation_hash]
+                ])
+                ->whereNull('activated_at')
+                ->update(['activated_at'=>$created_time]);
+        }catch (\Illuminate\Database\QueryException $e){
+            return var_dump($e);
+        }
+
     }
 }

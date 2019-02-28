@@ -15,6 +15,7 @@ Route::get('/','FrontendController@home')->name('home');
 Route::get('/about','FrontendController@about')->name('about');
 Route::get('/contact','FrontendController@contact')->name('contact');
 
+Route::get('/activate/{hash}','UserController@activate');
 Route::post('/login','UserController@login')->name('login');
 Route::post('/register','UserController@register')->name('register');
 
