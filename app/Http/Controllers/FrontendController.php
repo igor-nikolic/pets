@@ -28,4 +28,8 @@ class FrontendController extends Controller
     public function about(){
         return view('pages.front.about',$this->data);
     }
+
+    public function userPanel(){
+        return view('pages.front.user_panel',$this->data);
+    }
 }

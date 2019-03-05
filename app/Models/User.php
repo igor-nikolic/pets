@@ -27,10 +27,10 @@ class User
         try {
             $user_id = DB::table('user')->insertGetId(['role_id'=>$role,'first_name'=>$this->firstName,'last_name'=>$this->lastName,'email'=>$this->email,'password'=>$passdb,'created_at'=>$this->created_at,'activation_hash'=>$this->activation_hash]);
         } catch (\Exception $e) {
-            Log::error('Storing user with his data'.$this->firstName." ".$this->lastName." ".$this->email. " ".$passdb. " failed! Time: ".$this->created_at);
+            Log::warning('Storing user with his data'.$this->firstName." ".$this->lastName." ".$this->email. " ".$passdb. " failed! Time: ".$this->created_at);
             return 0;
         } catch (\Throwable $e) {
-            Log::error('Storing user with his data'.$this->firstName." ".$this->lastName." ".$this->email. " ".$passdb. " failed! Time: ".$this->created_at);
+            Log::warning('Storing user with his data'.$this->firstName." ".$this->lastName." ".$this->email. " ".$passdb. " failed! Time: ".$this->created_at);
             return 0;
         }
         Log::info('User with id '.$user_id.' registered at '.$this->created_at);
@@ -42,28 +42,34 @@ class User
             ->join('role','user.role_id','=','role.id')
             ->where('user.email','=',$this->email)
             ->whereNotNull('user.activated_at')
+            ->whereNull('deleted_at')
             ->first();
-
-//        if($user){
-//            return "true";
-//        }else{
-//            return "false";
-//        }
     }
 
     public function activate(){
+
         $created_time = date('Y-m-d H:i:s');
         try{
             return DB::table('user')
-                ->where([
-                    ['email','=',$this->email],
-                    ['activation_hash','=',$this->activation_hash]
-                ])
+                ->where('email','=',$this->email)
+                ->where('activation_hash','=',$this->activation_hash)
                 ->whereNull('activated_at')
                 ->update(['activated_at'=>$created_time]);
         }catch (\Illuminate\Database\QueryException $e){
+            Log::warning('Activating user '.$this->email.' failed at '.$created_time);
             return var_dump($e);
         }
 
+    }
+
+    public function isActivated(){
+        try{
+            return DB::table('user')
+                ->where('email','=',$this->email)
+                ->whereNotNull('activated_at')
+                ->first();
+        }catch (\Illuminate\Database\QueryException $e){
+            return var_dump($e);
+        }
     }
 }

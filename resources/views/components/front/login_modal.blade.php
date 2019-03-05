@@ -9,14 +9,14 @@
                 @if(session()->has('user'))
                         <h3 class="agileinfo_sign">You are logged in!</h3>
                 @else
-                        <h3 class="agileinfo_sign">Sign In</h3>
+                        <h3 class="agileinfo_sign">Log in</h3>
                         <div class="login-form">
-                            <form action="/login" method="post">
+                            <form action="{{ route('login')}}" method="post">
                                 @csrf
                                 <input type="email" name="loginemail" placeholder="E-mail" required="">
                                 <input type="password" name="loginpassword" placeholder="Password" required="">
                                 <div class="tp">
-                                    <input type="submit" value="Sign In">
+                                    <input type="submit" value="Log in">
                                 </div>
                             </form>
                         </div>

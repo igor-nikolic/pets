@@ -51,21 +51,21 @@
 <!-- //Modal2 -->
 @yield('content')
 <!-- welcome -->
-@include('components.front.welcome')
+{{--@include('components.front.welcome')--}}
 <!-- //welcome -->
 
 <!-- /services -->
-@include('components.front.services')
+{{--@include('components.front.services')--}}
 <!-- //services -->
 
 <!-- about -->
-@include('components.front.services_2')
+{{--@include('components.front.services_2')--}}
 <!-- //services -->
 <!-- w3-agilesale -->
-@include('components.front.contact_us')
+{{--@include('components.front.contact_us')--}}
 <!-- //w3-agilesale -->
 <!-- subscribe -->
-@include('components.front.subscribe')
+{{--@include('components.front.subscribe')--}}
 <!-- //subscribe -->
 
 <!-- copy rights start here -->

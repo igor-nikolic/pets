@@ -24,7 +24,7 @@ class LoginUser extends FormRequest
     public function rules()
     {
         return [
-            'loginemail'=>'required|email|exists:user,email',
+            'loginemail'=>'required|email',
             'loginpassword'=>'required|string|min:8'
         ];
     }

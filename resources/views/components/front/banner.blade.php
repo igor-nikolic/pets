@@ -16,9 +16,9 @@
                         </p>
                     </li>
                     @if(session()->has('user'))
-                        <li><a class="sign" href="/signout"><i class="fa fa-sign-out"></i> Sign Out</a>							</li>
+                        <li><a class="sign" href="/logout"><i class="fa fa-sign-out"></i> Log out</a>							</li>
                     @else
-                        <li><a class="sign" href="#" data-toggle="modal" data-target="#loginModal"><i class="fa fa-sign-in" aria-hidden="true"></i> Sign In</a>							</li>
+                        <li><a class="sign" href="#" data-toggle="modal" data-target="#loginModal"><i class="fa fa-sign-in" aria-hidden="true"></i> Log in</a>							</li>
                     @endif
                 </ul>
             </div>

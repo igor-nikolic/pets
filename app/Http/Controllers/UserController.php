@@ -5,10 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\LoginUser;
 use App\Http\Requests\StoreUser;
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
-//require 'vendor/autoload.php';
 class UserController extends Controller
 {
     /**
@@ -17,17 +17,33 @@ class UserController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function login(LoginUser $lu){
-        $email = $lu->input('loginemail');
+        $email = trim($lu->input('loginemail'));
         $password = $lu->input('loginpassword');
         $user = new User();
         $user->email = $email;
         $user->password = $password;
-        $user_data = $user->login();
-        if($user_data){
-            return 'postoji uzer';
+        $userData = $user->login();
+        if($userData){
+            if(password_verify($password,$userData->password)){
+                $lu->session()->put('user',$userData);
+                Log::info('User with email : '.$userData->email.' logged in at '.date('Y-m-d H:i:s'));
+                return redirect('/')->with('message','Welcome '.$userData->first_name.' '.$userData->last_name);
+            }else{
+                Log::info('Login failed for user | email: '.$email);
+                return redirect('/')->with('message','You have entered wrong password!');
+            }
         }else{
-            return "ne postoji uzer";
+            Log::info('Login failed for user | email: '.$email);
+            return redirect('/')->with('message','Login failed! You may have entered wrong credentials or your account has been deleted!');
         }
+    }
+    public function logout(Request $r){
+        if($r->session()->has('user')){
+            Log::info('User '.$r->session()->get('user')->email.' logged out at '.date('Y-m-d H:i:s'));
+            $r->session()->forget('user');
+            $r->session()->flush();
+        }
+        return redirect("/");
     }
 
     public function register(StoreUser $su){
@@ -56,9 +72,9 @@ class UserController extends Controller
                 $mail->Port = 587;                                    // TCP port to connect to
 
                 //Recipients
-                $mail->setFrom('ovajemailnijepravi@gmail.com', 'Mailer');
+                $mail->setFrom('ovajemailnijepravi@gmail.com', 'Account verification mail');
                 $mail->addAddress($user->email, 'Optional name');	// Add a recipient, Name is optional
-                $mail->addReplyTo('ovajemailnijepravi@gmail.com', 'Mailer');
+                $mail->addReplyTo('ovajemailnijepravi@gmail.com', 'Pet\'s kingdom');
 //                $mail->addCC('his-her-email@gmail.com');
 //                $mail->addBCC('his-her-email@gmail.com');
 
@@ -68,37 +84,45 @@ class UserController extends Controller
 
                 //Content
                 $mail->isHTML(true); 																	// Set email format to HTML
-                $mail->Subject = 'Activation for pets-kingdom';
+                $mail->Subject = 'Activation for pet\'s kingdom';
                 $mail->Body    = "Click <a href='http://localhost:8000/activate/".$user->activation_hash."'>here</a> to activate your account!";						// message
 
                 $mail->send();
                 $su->session()->flash('message','We have sent you a confirmation link to your email');
                 return redirect('/');
             } catch (Exception $e) {
-                $su->session()->flash('message','Greska sa mail serverom!');
-                return redirect('/');
+                return redirect('/')->with('message','Mail server error');
             }
         }
         else {
-            $su->session()->flash('message','You didn\'t register! Please try again later!');
-            return redirect('/');
+            return redirect('/')->with('message','You didn\'t register! Please try again later!');
         }
     }
     public function activate($hash){
         $dehashed = base64_decode($hash);
-        $email = explode('|',$dehashed);
+        $email = explode('|',$dehashed)[1];
+        $email = filter_var($email, FILTER_SANITIZE_EMAIL);
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return redirect('/')->with('message','Activation failed! Wrong URL!');
+        }
         $user = new User();
         $user->email = $email;
         $user->activation_hash = $hash;
-        $updated = $user->activate();
-        return $updated;
-        if($updated){
-            request()->session()->flash('message','You account has been verified!');
+        if($user->isActivated()){
+            request()->session()->flash('message','You have already verified your account!');
             return redirect('/');
         }else{
-            request()->session()->flash('message','You account has not been verified!');
-            return redirect('/');
+            if($user->activate()){
+                Log::info('User with email : '.$email.' activated at '.date('Y-m-d H:i:s'));
+                request()->session()->flash('message','You account has been verified! You can login now!');
+                return redirect('/');
+            }else{
+                request()->session()->flash('message','You account has not been verified!');
+                return redirect('/');
+            }
         }
+
+
     }
     public function index()
     {

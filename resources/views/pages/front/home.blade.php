@@ -31,10 +31,10 @@
         </script>
     @endif
 {{--checking for session flash messages--}}
-    @if(request()->session()->has('message'))
+    @if(session('message'))
         <script type="text/javascript">
         $(document).ready(function () {
-        $('#notificationModal').find('#notificationContent').html('<h4 class="agileinfo_sign">{{ request()->session()->get('message') }}</h4>');
+        $('#notificationModal').find('#notificationContent').html('<h4 class="agileinfo_sign">{{ session('message') }}</h4>');
         $('#notificationModal').modal('show');
         });
         </script>
