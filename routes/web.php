@@ -20,6 +20,7 @@ Route::post('/login','UserController@login')->name('login');
 Route::post('/register','UserController@register')->name('register');
 Route::get('/user-panel','FrontendController@userPanel');
 
-Route::resources(['users'=>'UserController']);
+Route::resource('users','UserController');
+Route::resource('pets','PetController');
 
 Route::post('/testvalidation','TestController@testvalidation');

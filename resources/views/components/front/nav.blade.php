@@ -15,10 +15,10 @@
                 <ul class="nav navbar">
                     @isset($menu)
                         @foreach($menu as $m)
-                            <li><a href="{{ $m->uri }}" {{ ($loop->first) ? 'class="active"' : '' }}>{{ $m->name }}</a></li>
+                            <li><a href="{{ url($m->uri) }}" {{ ($loop->first) ? 'class="active"' : '' }}>{{ $m->name }}</a></li>
                         @endforeach
                     @endisset
-
+                    <li><a href="{{ url('/pets') }}">My pets</a></li>
                     {{--<li><a href="{{ route('about') }}">About</a></li>--}}
                     {{--<li><a href="gallery.html">Gallery</a></li>--}}
                     {{--<li><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span data-letters="Pages">Pages</span><span class="caret"></span></a>--}}

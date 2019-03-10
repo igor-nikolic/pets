@@ -72,4 +72,11 @@ class User
             return var_dump($e);
         }
     }
+
+    public function getUsersBasicInfoById(){
+        return DB::table('user')
+            ->where('id','=',$this->id)
+            ->select('id','first_name','last_name','email')
+            ->first();
+    }
 }
