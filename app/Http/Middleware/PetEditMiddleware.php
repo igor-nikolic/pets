@@ -21,6 +21,7 @@ class PetEditMiddleware
         $pet = DB::table('pet')
             ->where('id','=',$petId)
             ->first();
+        if(!$pet) return redirect()->back();
         if($pet->user_id !== $userId) return redirect('/pets/'.$petId);
         return $next($request);
     }

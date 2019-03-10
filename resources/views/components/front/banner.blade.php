@@ -26,7 +26,6 @@
         <div class="banner-w3text w3layouts">
             <p class="w3_text">Inspired by w3layouts</p>
             <h3 class="w3ls_agile">Dog Cat Pet Care </h3>
-
             <h2>Pets Care</h2>
         </div>
         <!-- navigation -->

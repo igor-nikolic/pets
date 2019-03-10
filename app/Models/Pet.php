@@ -40,7 +40,7 @@ class Pet
      return DB::table('pet')
          ->join('breed','pet.breed_id','=','breed.id')
          ->where('pet.id','=',$this->id)
-         ->select('*','pet.name AS pet_name','breed.name AS breed_name')
+         ->select('*','pet.name AS pet_name','breed.name AS breed_name','pet.id AS pet_id')
          ->first();
  }
 
@@ -54,5 +54,24 @@ class Pet
      return DB::table('pet')
          ->where('id','=',$this->father_id)
          ->first();
+ }
+
+ public function destroyById(){
+     return DB::table('pet')
+         ->where('id','=',$this->id)
+         ->delete();
+ }
+
+ public function updateWithoutPhotos(){
+     return DB::table('pet')
+         ->where('id','=',$this->id)
+         ->update([
+             'name'=>$this->name,
+             'gender'=>$this->gender,
+             'birthday'=>$this->birthday,
+             'father_id'=>$this->father_id,
+             'mother_id'=>$this->mother_id,
+             'breed_id'=>$this->breed_id
+         ]);
  }
 }

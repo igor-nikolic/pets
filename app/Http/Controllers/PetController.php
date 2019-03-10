@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PetRequest;
+use App\Http\Requests\UpdatePet;
 use App\Models\Breed;
+use App\Models\Company;
+use App\Models\Menu;
 use App\Models\Pet;
 use App\Models\PetPhoto;
 use App\Models\Photo;
@@ -17,10 +20,15 @@ class PetController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    private $data;
     public function __construct()
     {
         $this->middleware('authorize')->except(['show']);
         $this->middleware('petEdit')->only(['edit']);
+        $menu = new Menu();
+        $company = new Company();
+        $this->data['menu'] = $menu->getAll();
+        $this->data['company'] = $company->getFirst();
     }
 
     public function index(Request $request)
@@ -40,12 +48,11 @@ class PetController extends Controller
     public function create()
     {
         //
-        $data = array();
         $pet = new Pet();
         $breed = new Breed();
-        $data['breeds'] = $breed->getAll();
-        $data['parents'] = $pet->getAll();
-        return view('pages.front.create_pet',$data);
+        $this->data['breeds'] = $breed->getAll();
+        $this->data['parents'] = $pet->getAll();
+        return view('pages.front.create_pet',$this->data);
     }
 
     /**
@@ -104,24 +111,23 @@ class PetController extends Controller
     public function show($id)
     {
 
-        $data = [];
         $pet = new Pet();
         $pet->id = $id;
         $petData = $pet->getById();
-//        dd($petData);
-        $data['petData'] = $petData;
+        if(!$petData) return redirect()->back();
+        $this->data['petData'] = $petData;
         $pet->mother_id = $petData->mother_id;
         $pet->father_id = $petData->father_id;
-        $data['motherData'] = $pet->getMother();
-        $data['fatherData'] = $pet->getFather();
+        $this->data['motherData'] = $pet->getMother();
+        $this->data['fatherData'] = $pet->getFather();
         $petPhoto = new PetPhoto();
         $petPhoto->petId = $id;
-        $data['photos'] = $petPhoto->getPhotoByPetId();
+        $this->data['photos'] = $petPhoto->getPhotoByPetId();
         $user = new User();
         $user->id = $petData->user_id;
-        $data['ownerData'] = $user->getUsersBasicInfoById();
+        $this->data['ownerData'] = $user->getUsersBasicInfoById();
 //        dd($data);
-        return view('pages.front.show_pet',$data);
+        return view('pages.front.show_pet',$this->data);
     }
 
     /**
@@ -133,6 +139,17 @@ class PetController extends Controller
     public function edit($id)
     {
         //
+        $pet = new Pet();
+        $pet->id = $id;
+        $petData = $pet->getById();
+        if(!$petData) return redirect()->back();
+        $breed = new Breed();
+        $this->data['breeds'] = $breed->getAll();
+        $this->data['parents'] = $pet->getAll();
+        $this->data['petData'] = $petData;
+//        dd($this->data);
+
+        return view('pages.front.edit_pet',$this->data);
     }
 
     /**
@@ -142,9 +159,33 @@ class PetController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdatePet $request, $id)
     {
         //
+        if($request->input('petFather') == 0) $petFather=null;
+        else $petFather = $request->input('petFather');
+        if($request->input('petMother') == 0) $petMother=null;
+        else $petMother = $request->input('petMother');
+        $pet = new Pet();
+        $pet->id = $request->input('petId');
+        $pet->name = trim($request->input('petName'));
+        $pet->gender = $request->input('petGender')[0];
+        $pet->birthday = $request->input('petBirthday');
+        $pet->father_id = $petFather;
+        $pet->mother_id = $petMother;
+        $pet->breed_id =  $request->input('petBreed');
+//        $pet->user_id = $request->session()->get('user')->id;
+        $result = $pet->updateWithoutPhotos();
+        if($result == -1 ) {
+            $response = ['success' => false, 'message' => 'Update failed'];
+            return json_encode($response);
+        }elseif($result == 0){
+            $response = ['success'=>true,'message'=>'You didn\'t change anything!'];
+            return json_encode($response);
+        }else{
+            $response = ['success'=>true,'message'=>'Update successful'];
+            return json_encode($response);
+        }
     }
 
     /**
@@ -155,6 +196,16 @@ class PetController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $pet = new Pet();
+        $pet->id = $id;
+        $data = [];
+        if($pet->destroyById()){
+            $data['success'] = true;
+            $data['message'] = 'You have successfully deleted a pet!';
+            return json_encode($data);
+        }
+        $data['success'] = false;
+        $data['message'] = 'Error deleting this pet!';
+        return json_encode($data);
     }
 }

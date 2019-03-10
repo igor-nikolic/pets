@@ -11,8 +11,6 @@ class FrontendController extends Controller
 {
     //
     private $data;
-    private $menu;
-    private $company;
 
     public function __construct()
     {
