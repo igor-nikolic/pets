@@ -17,7 +17,7 @@ class PetEditMiddleware
     public function handle($request, Closure $next)
     {
         $petId = (int) $request->route()->parameter('pet');
-        $userId = $request->session()->get('user')->id;
+        $userId = $request->session()->get('user')->user_id;
         $pet = DB::table('pet')
             ->where('id','=',$petId)
             ->first();

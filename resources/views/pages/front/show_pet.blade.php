@@ -35,8 +35,13 @@
                                     <h4><strong>Name: </strong>{{ ucfirst($motherData->name) }}</h4>
                                     <h4><strong>Birthday: </strong>{{ $motherData->birthday }}</h4>
                             @endisset
-                            {{--<h5><strong>Born on:</strong> {{ $petData->birthday }}</h5>--}}
+                            @if(session()->has('user'))
+                                @if(session()->get('user')->user_id === $petData->user_id)
+                                    <a href="{{ url('/') }}/pets/{{ $petData->pet_id }}/edit"><button type="button" class="btn btn-info">Edit</button></a>
+                                @endif
+                            @endif
                         @endisset
+
                         <div class="clearfix"> </div>
                     </div>
                 </div>

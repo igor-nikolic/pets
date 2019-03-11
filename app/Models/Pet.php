@@ -74,4 +74,60 @@ class Pet
              'breed_id'=>$this->breed_id
          ]);
  }
+public function getPaginateAll(){
+    return DB::table('pet AS child')
+        ->leftJoin('pet AS father','child.father_id','=','father.id')
+        ->leftJoin('pet as mother','child.mother_id','=','mother.id')
+        ->join('breed','child.breed_id','=','breed.id')
+        ->join('user','child.user_id','=','user.id')
+        ->select(
+            'child.id AS pet_id',
+            'child.name AS pet_name',
+            'child.birthday AS pet_birthday',
+            'child.gender AS pet_gender',
+            'child.father_id AS pet_fatherID',
+            'child.mother_id AS pet_motherID',
+            'child.user_id AS pet_userID',
+            'child.breed_id AS pet_breedID',
+            'father.id AS father_id',
+            'father.name AS father_name',
+            'mother.id AS mother_id',
+            'mother.name AS mother_name',
+            'breed.name AS pet_breed',
+            'user.first_name AS pet_owner_first_name',
+            'user.last_name AS pet_owner_last_name',
+            'user.email AS pet_owner_email'
+        )
+        ->paginate(10);
+}
+
+ public function searchPetByName($query){
+
+
+     return DB::table('pet AS child')
+         ->leftJoin('pet AS father','child.father_id','=','father.id')
+         ->leftJoin('pet as mother','child.mother_id','=','mother.id')
+         ->join('breed','child.breed_id','=','breed.id')
+         ->join('user','child.user_id','=','user.id')
+         ->select(
+             'child.id AS pet_id',
+             'child.name AS pet_name',
+             'child.birthday AS pet_birthday',
+             'child.gender AS pet_gender',
+             'child.father_id AS pet_fatherID',
+             'child.mother_id AS pet_motherID',
+             'child.user_id AS pet_userID',
+             'child.breed_id AS pet_breedID',
+             'father.id AS father_id',
+             'father.name AS father_name',
+             'mother.id AS mother_id',
+             'mother.name AS mother_name',
+             'breed.name AS pet_breed',
+             'user.first_name AS pet_owner_first_name',
+             'user.last_name AS pet_owner_last_name',
+             'user.email AS pet_owner_email'
+         )
+         ->where('child.name','like','%'.$query.'%')
+         ->paginate(10);
+ }
 }

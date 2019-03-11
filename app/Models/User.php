@@ -43,6 +43,15 @@ class User
             ->where('user.email','=',$this->email)
             ->whereNotNull('user.activated_at')
             ->whereNull('deleted_at')
+            ->select(
+                'user.id AS user_id',
+                'user.role_id AS role_id',
+                'user.first_name AS user_first_name',
+                'user.last_name AS user_last_name',
+                'user.email AS user_email',
+                'role.role AS user_role_name',
+                'user.password AS user_password'
+                )
             ->first();
     }
 

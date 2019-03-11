@@ -24,10 +24,11 @@ class UserController extends Controller
         $user->password = $password;
         $userData = $user->login();
         if($userData){
-            if(password_verify($password,$userData->password)){
+            if(password_verify($password,$userData->user_password)){
+                unset($userData->user_password);
                 $lu->session()->put('user',$userData);
-                Log::info('User with email : '.$userData->email.' logged in at '.date('Y-m-d H:i:s'));
-                return redirect('/')->with('message','Welcome '.$userData->first_name.' '.$userData->last_name);
+                Log::info('User with email : '.$userData->user_email.' logged in at '.date('Y-m-d H:i:s'));
+                return redirect('/')->with('message','Welcome '.$userData->user_first_name.' '.$userData->user_last_name);
             }else{
                 Log::info('Login failed for user | email: '.$email);
                 return redirect('/')->with('message','You have entered wrong password!');
@@ -39,7 +40,7 @@ class UserController extends Controller
     }
     public function logout(Request $r){
         if($r->session()->has('user')){
-            Log::info('User '.$r->session()->get('user')->email.' logged out at '.date('Y-m-d H:i:s'));
+            Log::info('User '.$r->session()->get('user')->user_email.' logged out at '.date('Y-m-d H:i:s'));
             $r->session()->forget('user');
             $r->session()->flush();
         }

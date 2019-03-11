@@ -19,7 +19,7 @@ Route::get('/activate/{hash}','UserController@activate');
 Route::post('/login','UserController@login')->name('login');
 Route::post('/register','UserController@register')->name('register');
 Route::get('/user-panel','FrontendController@userPanel');
-
+Route::get('/pets/search','PetController@search');
 Route::resource('users','UserController');
 Route::resource('pets','PetController');
 

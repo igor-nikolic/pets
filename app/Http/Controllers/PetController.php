@@ -23,7 +23,7 @@ class PetController extends Controller
     private $data;
     public function __construct()
     {
-        $this->middleware('authorize')->except(['show']);
+        $this->middleware('authorize')->except(['show','index','search']);
         $this->middleware('petEdit')->only(['edit']);
         $menu = new Menu();
         $company = new Company();
@@ -33,11 +33,10 @@ class PetController extends Controller
 
     public function index(Request $request)
     {
-        //
-//        if($request->session()->has('user') && $request->session()->get('user')->role_id==1){
-//            return DB::table('pet')->get();
-//        }
-        echo "bravo";
+        $pet = new Pet();
+        $this->data['pets'] = $pet->getPaginateAll();
+//        dd($this->data['pets']);
+        return view('pages.front.search_pet',$this->data);
     }
 
     /**
@@ -126,7 +125,6 @@ class PetController extends Controller
         $user = new User();
         $user->id = $petData->user_id;
         $this->data['ownerData'] = $user->getUsersBasicInfoById();
-//        dd($data);
         return view('pages.front.show_pet',$this->data);
     }
 
@@ -207,5 +205,16 @@ class PetController extends Controller
         $data['success'] = false;
         $data['message'] = 'Error deleting this pet!';
         return json_encode($data);
+    }
+
+    public function search(Request $request){
+        if($request->ajax())
+        {
+            $query = $request->get('q');
+            $query = str_replace(" ", "%", $query);
+            $pet = new Pet();
+            $data = $pet->searchPetByName($query);
+            return view('components.front.pet_pagination', ['pets'=>$data])->render();
+        }
     }
 }
