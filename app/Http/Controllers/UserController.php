@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginUser;
 use App\Http\Requests\StoreUser;
+use App\Http\Requests\UpdateUser;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
@@ -16,6 +18,11 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    public function __construct()
+    {
+        $this->middleware('admin')->except(['login','logout','register','activate']);
+    }
+
     public function login(LoginUser $lu){
         $email = trim($lu->input('loginemail'));
         $password = $lu->input('loginpassword');
@@ -57,6 +64,7 @@ class UserController extends Controller
         $user->password = $su->input('password');
         $user->created_at = date('Y-m-d H:i:s');
         $user->activation_hash = $activation_hash;
+        $user->role_id = 2;
         $user_id = $user->store();
         if($user_id) {
             $mail = new PHPMailer(true);                            // Passing `true` enables exceptions
@@ -127,7 +135,10 @@ class UserController extends Controller
     }
     public function index()
     {
-        //
+        $data = [];
+        $user = new User();
+        $data['users'] = $user->getPaginateAll();
+        return view('pages.admin.user.users',$data);
     }
 
     /**
@@ -138,6 +149,10 @@ class UserController extends Controller
     public function create()
     {
         //
+//        $data = array();
+//        $role = new Role();
+//        $data['roles'] = $role->getAll();
+        return view('pages.admin.user.create');
     }
 
     /**
@@ -146,9 +161,23 @@ class UserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreUser $request)
     {
-        //
+        $user = new User();
+        $user->firstName = ucwords(trim($request->input('first_name')));
+        $user->lastName = ucwords(trim($request->input('last_name')));
+        $user->email = $request->input('email');
+        $user->password = $request->input('password');
+        $user->created_at = date('Y-m-d H:i:s');
+        $user->role_id = $request->input('userRole')[0];
+        $user_id = $user->storeAndActivate();
+        if($user_id){
+            $response = ['success'=>true,'message'=>'You have successfully added a user!'];
+            return json_encode($response);
+        }else{
+            $response = ['success'=>false,'message'=>'Error adding a user!'];
+            return json_encode($response);
+        }
     }
 
     /**
@@ -159,7 +188,8 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        //
+        // redirecting
+        return redirect('/admin/users/'.$id.'/edit');
     }
 
     /**
@@ -170,7 +200,14 @@ class UserController extends Controller
      */
     public function edit($id)
     {
-        //
+        $data=array();
+        $user = new User();
+        $user->id = $id;
+        $userData = $user->getById();
+        $data['userData'] = $userData;
+        if(!$userData) return redirect()->back();
+//        dd($data);
+        return view('pages.admin.user.edit',$data);
     }
 
     /**
@@ -180,9 +217,10 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateUser $request, $id)
     {
         //
+        return json_encode($request->all());
     }
 
     /**
@@ -194,5 +232,16 @@ class UserController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function search(Request $request){
+        if($request->ajax())
+        {
+            $query = $request->get('q');
+            $query = str_replace(" ", "%", $query);
+            $user = new User();
+            $data = $user->search($query);
+            return view('partials.admin.user_pagination', ['users'=>$data])->render();
+        }
     }
 }

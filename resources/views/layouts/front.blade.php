@@ -44,36 +44,36 @@
 
 <body>
 <!-- banner -->
-@include('components.front.banner')
+@include('partials.front.banner')
 <!-- //banner -->
 <!-- Modal1 -->
-@include('components.front.login_modal')
+@include('partials.front.login_modal')
 <!-- //Modal1 -->
 <!-- Modal2 -->
-@include('components.front.register_modal')
+@include('partials.front.register_modal')
 <!-- //Modal2 -->
 @yield('content')
 <!-- welcome -->
-{{--@include('components.front.welcome')--}}
+{{--@include('partials.front.welcome')--}}
 <!-- //welcome -->
 
 <!-- /services -->
-{{--@include('components.front.services')--}}
+{{--@include('partials.front.services')--}}
 <!-- //services -->
 
 <!-- about -->
-{{--@include('components.front.services_2')--}}
+{{--@include('partials.front.services_2')--}}
 <!-- //services -->
 <!-- w3-agilesale -->
-{{--@include('components.front.contact_us')--}}
+{{--@include('partials.front.contact_us')--}}
 <!-- //w3-agilesale -->
 <!-- subscribe -->
-{{--@include('components.front.subscribe')--}}
+{{--@include('partials.front.subscribe')--}}
 <!-- //subscribe -->
 
 <!-- copy rights start here -->
-@include('components.front.footer')
-@include('components.front.notification_modal')
+@include('partials.front.footer')
+@include('partials.front.notification_modal')
 
 <!-- Bootstrap core JavaScript
 ================================================== -->

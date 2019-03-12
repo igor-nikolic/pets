@@ -3,7 +3,6 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-
 class StoreUser extends FormRequest
 {
     /**
@@ -11,6 +10,7 @@ class StoreUser extends FormRequest
      *
      * @return bool
      */
+
     public function authorize()
     {
         return true;
@@ -21,13 +21,14 @@ class StoreUser extends FormRequest
      *
      * @return array
      */
+
     public function rules()
     {
         return [
             'first_name'=>'required|between:3,30',
             'last_name'=>'required|between:3,50',
-            'email'=>'required|email|unique:user',
-            'password'=>'|required|string|min:8',
+            'email'=>'required|email|unique:user,email',
+            'password'=>'required|string|min:8',
             'confirmpassword'=>'same:password'
         ];
     }

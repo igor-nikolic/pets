@@ -14,13 +14,26 @@
 Route::get('/','FrontendController@home')->name('home');
 Route::get('/about','FrontendController@about')->name('about');
 Route::get('/contact','FrontendController@contact')->name('contact');
+
 Route::get('/logout','UserController@logout');
 Route::get('/activate/{hash}','UserController@activate');
 Route::post('/login','UserController@login')->name('login');
 Route::post('/register','UserController@register')->name('register');
+
 Route::get('/user-panel','FrontendController@userPanel');
 Route::get('/pets/search','PetController@search');
-Route::resource('users','UserController');
+
 Route::resource('pets','PetController');
 
+//Route::middleware(['admin'])->group(function () {
+//
+//});
+Route::group([
+    'prefix'     => 'admin',
+    'middleware' => 'admin',
+], function() {
+    Route::get('/user/search','UserController@search');
+    Route::get('/home','AdminController@home')->name('admin-panel');
+    Route::resource('users','UserController');
+});
 Route::post('/testvalidation','TestController@testvalidation');

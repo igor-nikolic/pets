@@ -29,7 +29,7 @@
             <h2>Pets Care</h2>
         </div>
         <!-- navigation -->
-    @include('components.front.nav')
+    @include('partials.front.nav')
     <!-- //navigation -->
     </div>
 </div>

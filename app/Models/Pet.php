@@ -130,4 +130,8 @@ public function getPaginateAll(){
          ->where('child.name','like','%'.$query.'%')
          ->paginate(10);
  }
+
+ public function countAll(){
+     return DB::table('pet')->count();
+ }
 }

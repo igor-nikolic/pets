@@ -25,7 +25,7 @@
                             </tr>
                             </thead>
                             <tbody id="results">
-                            @include('components.front.pet_pagination')
+                            @include('partials.front.pet_pagination')
                             </tbody>
                         </table>
                         <input type="hidden" id="currentPage" value="1"/>
@@ -69,7 +69,6 @@
                         '_token':csrf
                     },
                     success:function (data) {
-                        console.log(data);
                         $('#results').html('');
                         $('#results').html(data);
                     },

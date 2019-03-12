@@ -214,7 +214,7 @@ class PetController extends Controller
             $query = str_replace(" ", "%", $query);
             $pet = new Pet();
             $data = $pet->searchPetByName($query);
-            return view('components.front.pet_pagination', ['pets'=>$data])->render();
+            return view('partials.front.pet_pagination', ['pets'=>$data])->render();
         }
     }
 }
