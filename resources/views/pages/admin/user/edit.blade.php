@@ -25,11 +25,11 @@
                         </div>
                         <div class="form-group">
                             <label for="email">Email address</label>
-                            <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" value="{{ $userData->email }}">
+                            <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" value="{{ $userData->email }}" disabled>
                         </div>
                         <div class="form-group">
                             <label for="email">Change password</label>
-                            <input type="checkbox" class="form-control" id="changePassword" name="changePassword" placeholder="Enter email" value="{{ $userData->email }}">
+                            <input type="checkbox" id="changePassword" name="changePassword" checked>
                         </div>
                         <div class="form-group">
                             <label for="password">Password</label>
@@ -58,9 +58,17 @@
                     <!-- /.box-body -->
 
                     <div class="box-footer">
-                        <button type="submit" class="btn btn-primary" id="btnSubmitUser">Submit</button>
+                        <button type="submit" class="btn btn-primary" id="btnEditUser">Submit</button>
+                        <div id="btnHolderDiv" style="display: inline-block;">
+                            @if(is_null($userData->deleted_at))
+                                <button type="button" class="btn btn-danger" id="deactivateUser">Deactivate this user</button>
+                            @else
+                                <button type="button" class="btn btn-info" id="reactivateUser">Reactivate this user</button>
+                            @endif
+                        </div>
                     </div>
                 </form>
+
             <input type="hidden" value="{{ $userData->id }}" id="userId"/>
                 <div id="notificationContent" class="col-md-2 col-lg-6">awdawd</div>
             @endisset
@@ -74,7 +82,17 @@
     @parent
     <script type="text/javascript">
         $(document).ready(function () {
-            // $("#carouselExampleControls").carousel();
+            $(document).on('click','#changePassword',function () {
+               if($(this).is(':checked')) {
+                   $('#password').attr('disabled',false).removeClass('disabled');
+                   $('#confirmpassword').attr('disabled',false).removeClass('disabled');
+               }
+               else {
+                   $('#password').attr('disabled',true).addClass('disabled');
+                   $('#confirmpassword').attr('disabled',true).addClass('disabled');
+               }
+            });
+
             $(document).on('submit','#editUserForm',function (e) {
                 e.preventDefault();
                 let fd = new FormData(this);
@@ -85,26 +103,29 @@
                     processData: false,
                     contentType: false,
                     beforeSend:function(){
-                        $('#btnSubmitUser').html('Wait ...');
-                        $('#btnSubmitUser').addClass('disabled');
-                        $('#btnSubmitUser').attr('disabled',true);
+                        $('#btnEditUser').html('Wait ...');
+                        $('#btnEditUser').addClass('disabled');
+                        $('#btnEditUser').attr('disabled',true);
                     },
                     success:function(data) {
+                        $('#btnEditUser').html('Submit');
+                        $('#btnEditUser').removeClass('disabled');
+                        $('#btnEditUser').removeAttr('disabled');
                         console.log(data);
                         data = JSON.parse(data);
                         if(data.success){
                             $('#notificationContent').html(`<div class="alert alert-dismissible alert-success" role="alert" id="notification">
                             <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>${data.message}</div>`);
                         }else{
-                            $('#notificationContent').html(`<div class="alert alert-dismissible alert-success" role="alert" id="notification">
+                            $('#notificationContent').html(`<div class="alert alert-dismissible alert-danger" role="alert" id="notification">
                             <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>${data.message}</div>`);
                         }
-                        document.querySelector('#storeUserForm').reset();
+                        // document.querySelector('#editUserForm').reset();
                     },
                     fail:function (xhr, status, errorMsg) {
-                        $('#btnSubmitUser').html('Submit');
-                        $('#btnSubmitUser').removeClass('disabled');
-                        $('#btnSubmitUser').removeAttr('disabled');
+                        $('#btnEditUser').html('Submit');
+                        $('#btnEditUser').removeClass('disabled');
+                        $('#btnEditUser').removeAttr('disabled');
                         let responseText = JSON.parse(xhr.responseText);
                         let warnings =``;
                         for(let m in responseText.errors){
@@ -115,9 +136,9 @@
 
                     },
                     error:function (xhr, status, errorMsg) {
-                        $('#btnSubmitUser').html('Submit');
-                        $('#btnSubmitUser').removeClass('disabled');
-                        $('#btnSubmitUser').removeAttr('disabled');
+                        $('#btnEditUser').html('Submit');
+                        $('#btnEditUser').removeClass('disabled');
+                        $('#btnEditUser').removeAttr('disabled');
                         let responseText = JSON.parse(xhr.responseText);
                         let warnings =``;
                         for(let m in responseText.errors){
@@ -129,6 +150,73 @@
                     }
                 });
             });
+
+            function url_redirect(url){
+                let X = setTimeout(function(){
+                    window.location.replace(url);
+                    return true;
+                },300);
+
+                if( window.location = url ){
+                    clearTimeout(X);
+                    return true;
+                } else {
+                    if( window.location.href = url ){
+                        clearTimeout(X);
+                        return true;
+                    }else{
+                        clearTimeout(X);
+                        window.location.replace(url);
+                        return true;
+                    }
+                }
+                return false;
+            };
+            $(document).on('click','#deactivateUser',function () {
+                let btn = $(this);
+                btn.addClass('disabled');
+                btn.attr('disabled');
+                btn.html('Wait...');
+                $.ajax({
+                    method:'delete',
+                    url:baseURL+'/admin/users/'+$('#userId').val(),
+                    data:{
+                        '_token':csrf
+                    },
+                    success:function (data) {
+                        console.log(data);
+                        data = JSON.parse(data);
+                        if(data.success) {
+                             $('#btnHolderDiv').html(`<button type="button" class="btn btn-info" id="reactivateUser">Reactivate this user</button>`);
+                        }else{
+                            alert(data.message);
+                        }
+                    }
+                });
+            });
+            $(document).on('click','#reactivateUser',function () {
+                let btn = $(this);
+                btn.addClass('disabled');
+                btn.attr('disabled');
+                btn.html('Wait...');
+                $.ajax({
+                    method:'post',
+                    url:baseURL+'/admin/users/reactivate/'+$('#userId').val(),
+                    data:{
+                        '_token':csrf
+                    },
+                    success:function (data) {
+                        console.log(data);
+                        data = JSON.parse(data);
+                        if(data.success) {
+                            $('#btnHolderDiv').html(`<button type="button" class="btn btn-danger" id="deactivateUser">Deactivate this user</button>`);
+                        }else{
+                            alert(data.message);
+                        }
+                    }
+                });
+            });
+
         });
     </script>
 @endsection

@@ -171,7 +171,41 @@ class User
     public function getById(){
         return DB::table('user')
             ->where('id','=',$this->id)
-            ->select('id','role_id','first_name','last_name','email')
+            ->select('id','role_id','first_name','last_name','email','deleted_at')
             ->first();
+    }
+
+    public function updateWithPassword(){
+        $passdb = password_hash($this->password,PASSWORD_BCRYPT);
+        return DB::table('user')
+            ->where('id','=',$this->id)
+            ->update([
+                'first_name'=>$this->firstName,
+                'last_name'=>$this->lastName,
+                'role_id'=>$this->role_id,
+                'password'=>$passdb
+            ]);
+    }
+
+    public function updateWithoutPassword(){
+        return DB::table('user')
+            ->where('id','=',$this->id)
+            ->update([
+                'first_name'=>$this->firstName,
+                'last_name'=>$this->lastName,
+                'role_id'=>$this->role_id
+            ]);
+    }
+
+    public function deactivate(){
+        return DB::table('user')
+            ->where('id','=',$this->id)
+            ->update(['deleted_at'=>date('Y-m-d H:i:s')]);
+    }
+
+    public function reactivate(){
+        return DB::table('user')
+            ->where('id','=',$this->id)
+            ->update(['deleted_at'=>null]);
     }
 }

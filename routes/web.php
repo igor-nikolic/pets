@@ -33,7 +33,10 @@ Route::group([
     'middleware' => 'admin',
 ], function() {
     Route::get('/user/search','UserController@search');
+    Route::get('/breed/search','BreedController@search');
     Route::get('/home','AdminController@home')->name('admin-panel');
+    Route::post('/users/reactivate/{userid}','UserController@reactivate');
     Route::resource('users','UserController');
+    Route::resource('breeds','BreedController');
 });
 Route::post('/testvalidation','TestController@testvalidation');

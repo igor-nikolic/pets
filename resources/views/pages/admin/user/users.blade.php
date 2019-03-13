@@ -65,8 +65,8 @@
             $(document).on('click','#btnSearchUsers',function () {
                 let searchTerm = $('#searchUser').val().trim();
                 $('#searchTerm').val(searchTerm);
-                let page = $('#currentPage').val();
-                searchUser(searchTerm,page);
+                // let page = $('#currentPage').val();
+                searchUser(searchTerm);
             });
 
             $(document).on('click', '.pagination a', function(event){

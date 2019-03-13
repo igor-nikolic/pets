@@ -68,14 +68,32 @@
                     data:{
                         '_token':csrf
                     },
+                    beforeSend:function(){
+                      let btn = $('#btnSearchPet');
+                      btn.addClass('disabled');
+                      btn.attr('disabled',true);
+                      btn.html('Wait...');
+                    },
                     success:function (data) {
+                        let btn = $('#btnSearchPet');
+                        btn.removeClass('disabled');
+                        btn.attr('disabled',false);
+                        btn.html('Search');
                         $('#results').html('');
                         $('#results').html(data);
                     },
                     error:function () {
+                        let btn = $('#btnSearchPet');
+                        btn.removeClass('disabled');
+                        btn.attr('disabled',false);
+                        btn.html('Search');
                         console.log("erorrs");
                     },
                     fail:function () {
+                        let btn = $('#btnSearchPet');
+                        btn.removeClass('disabled');
+                        btn.attr('disabled',false);
+                        btn.html('Search');
                         console.log("failed");
                     }
                 });

@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\LoginUser;
 use App\Http\Requests\StoreUser;
 use App\Http\Requests\UpdateUser;
-use App\Models\Role;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
@@ -219,8 +218,27 @@ class UserController extends Controller
      */
     public function update(UpdateUser $request, $id)
     {
-        //
-        return json_encode($request->all());
+
+        $user = new User();
+        $user->firstName = ucfirst(trim($request->input('first_name')));
+        $user->lastName = ucfirst(trim($request->input('last_name')));
+        $user->role_id = $request->input('userRole')[0];
+        $user->id = $id;
+        if($request->input('changePassword')) {
+            $user->password = $request->input('password');
+            $res = $user->updateWithPassword();
+            if($res == -1){
+                return json_encode(['success'=>false,'message'=>'User not updated!']);
+            }else{
+                return json_encode(['success'=>true,'message'=>'User updated!']);
+            }
+        }
+        $res = $user->updateWithoutPassword();
+        if($res == -1){
+            return json_encode(['success'=>false,'message'=>'User not updated!']);
+        }else{
+            return json_encode(['success'=>true,'message'=>'User updated!']);
+        }
     }
 
     /**
@@ -229,11 +247,22 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($id) // its more like deactivate
     {
-        //
+        $user = new User();
+        $user->id = $id;
+        $res = $user->deactivate();
+        if($res == 1) return json_encode(['success'=>true]);
+        else return json_encode(['success'=>false]);
     }
 
+    public function reactivate($id){
+        $user = new User();
+        $user->id = $id;
+        $res = $user->reactivate();
+        if($res == 1) return json_encode(['success'=>true]);
+        else return json_encode(['success'=>false]);
+    }
     public function search(Request $request){
         if($request->ajax())
         {
