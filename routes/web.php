@@ -34,6 +34,7 @@ Route::group([
     'prefix'     => 'admin',
     'middleware' => 'admin',
 ], function() {
+    Route::get('logs','\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
     Route::get('/user/search','UserController@search');
     Route::get('/breed/search','BreedController@search');
     Route::get('/home','AdminController@home')->name('admin-panel');
