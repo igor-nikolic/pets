@@ -44,4 +44,9 @@ class Breed
             ->where('id','=',$this->id)
             ->delete();
     }
+
+    public function store(){
+        return DB::table('breed')
+            ->insertGetId(['name'=>$this->name]);
+    }
 }

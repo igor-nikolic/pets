@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreBreed;
 use App\Models\Breed;
 use DemeterChain\B;
 use Illuminate\Http\Request;
@@ -29,6 +30,7 @@ class BreedController extends Controller
     public function create()
     {
         //
+        return view('pages.admin.breed.create');
     }
 
     /**
@@ -37,9 +39,15 @@ class BreedController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreBreed $request)
     {
         //
+        $breed = new Breed();
+        $breed->name = ucfirst(trim($request->input('breed_name')));
+        $breedId = $breed->store();
+        if($breedId) return json_encode(['success'=>true,'message'=>'You have successfully added a breed!',"breed_id"=>$breedId]);
+        else return json_encode(['success'=>false,'message'=>'Failed addding a breed']);
+
     }
 
     /**

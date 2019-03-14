@@ -20,6 +20,8 @@ Route::get('/activate/{hash}','UserController@activate');
 Route::post('/login','UserController@login')->name('login');
 Route::post('/register','UserController@register')->name('register');
 
+Route::post('/vote','FrontendController@vote');
+Route::post('/email','FrontendController@sendEmail');
 Route::get('/user-panel','FrontendController@userPanel');
 Route::get('/pets/search','PetController@search');
 
