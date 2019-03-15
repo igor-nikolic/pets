@@ -49,4 +49,14 @@ class Breed
         return DB::table('breed')
             ->insertGetId(['name'=>$this->name]);
     }
+
+    public function getRandomBreeds(){
+        $numberOfBreeds = DB::table('breed')->count();
+        $arr = range(1,$numberOfBreeds);
+        shuffle($arr);
+        $ids = array_slice($arr,0,5);
+        return DB::table('breed')
+            ->whereIn('id', $ids)
+            ->get();
+    }
 }

@@ -2,12 +2,23 @@
     <div class="container">
         <div class="top-nav bottom-w3lnav">
             <ul>
-                <li><a href="index.html">Home</a></li>
-                <li><a href="about.html">About</a></li>
-                <li><a href="gallery.html">Gallery</a></li>
-                <li><a href="icons.html">Icons</a></li>
-                <li><a href="typo.html">Typography</a></li>
-                <li><a href="contact.html">Contact</a></li>
+                @isset($menu)
+                    @foreach($menu as $m)
+                        @if(session()->has('user'))
+                            @if(session()->get('user')->role_id == 1)
+                                <li><a href="{{ url($m->uri) }}" {{ ($loop->first) ? 'class="active"' : '' }}>{{ $m->name }}</a></li>
+                            @else
+                                @if($m->role_id !== 1)
+                                    <li><a href="{{ url($m->uri) }}" {{ ($loop->first) ? 'class="active"' : '' }}>{{ $m->name }}</a></li>
+                                @endif
+                            @endif
+                        @else
+                            @if(is_null($m->role_id))
+                                <li><a href="{{ url($m->uri) }}" {{ ($loop->first) ? 'class="active"' : '' }}>{{ $m->name }}</a></li>
+                            @endif
+                        @endif
+                    @endforeach
+                @endisset
             </ul>
         </div>
         <p>© 2017 Pets Care. All Rights Reserved | Design by <a href="http://w3layouts.com/" target="_blank">W3layouts</a> </p>

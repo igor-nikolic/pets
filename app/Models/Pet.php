@@ -134,4 +134,27 @@ public function getPaginateAll(){
  public function countAll(){
      return DB::table('pet')->count();
  }
+
+ public function getRandomPets(){
+
+     $numberOfPets = DB::table('pet')->count();
+     $arr = range(1,$numberOfPets);
+     shuffle($arr);
+     $ids = array_slice($arr,0,5);
+     return DB::table('pet AS p')
+         ->join('user AS u','p.user_id','=','u.id')
+         ->join('breed AS b','p.breed_id','=','b.id')
+         ->select('p.id AS id','p.name AS name','p.gender AS gender','p.birthday AS birthday','u.email AS owner_email','u.first_name AS owner_first_name','u.last_name AS owner_last_name','b.name AS pet_breed')
+         ->whereIn('p.id', $ids)
+         ->get();
+ }
+
+ public function getPhotoById($id){
+     return DB::table('pet_photo AS pp')
+         ->join('photo AS ph','pp.photo_id','=','ph.id')
+         ->where('pp.pet_id','=',$id)
+         ->select('ph.path AS path','ph.alt AS alt')
+         ->first();
+ }
+
 }

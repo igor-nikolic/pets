@@ -12,12 +12,17 @@
             <!-- form start -->
             @isset($breedData)
                 <form role="form" action=" {{ url('/') }}/admin/breed/{{ $breedData->id }}" method="post"
-                      id="editBreedForm">
+                      id="editBreedForm" enctype="multipart/form-data">
                     @csrf
                     @method('PATCH')
                     <div class="box-body">
                         <div class="form-group">
                             <label for="breed_name">Breed name</label>
+                            <input class="form-control" type="text" placeholder="Breed name" id="breed_name"
+                                   name="breed_name" value="{{ $breedData->name }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="breed_photo">Breed name</label>
                             <input class="form-control" type="text" placeholder="Breed name" id="breed_name"
                                    name="breed_name" value="{{ $breedData->name }}">
                         </div>

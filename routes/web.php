@@ -42,4 +42,3 @@ Route::group([
     Route::resource('users','UserController');
     Route::resource('breeds','BreedController');
 });
-Route::post('/testvalidation','TestController@testvalidation');

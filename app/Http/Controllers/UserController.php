@@ -93,12 +93,14 @@ class UserController extends Controller
                 //Content
                 $mail->isHTML(true); 																	// Set email format to HTML
                 $mail->Subject = 'Activation for pet\'s kingdom';
-                $mail->Body    = "Click <a href='http://localhost:8000/activate/".$user->activation_hash."'>here</a> to activate your account!";						// message
+                $serverAddress = $su->server('SERVER_ADDR');
+                $mail->Body    = "Click <a href='".$serverAddress."/activate/".$user->activation_hash."'>here</a> to activate your account!";						// message
 
                 $mail->send();
                 $su->session()->flash('message','We have sent you a confirmation link to your email');
                 return redirect('/');
             } catch (Exception $e) {
+                Log::alert('Sending mail for registration failed! User mail: '.$user->email);
                 return redirect('/')->with('message','Mail server error');
             }
         }
@@ -147,10 +149,6 @@ class UserController extends Controller
      */
     public function create()
     {
-        //
-//        $data = array();
-//        $role = new Role();
-//        $data['roles'] = $role->getAll();
         return view('pages.admin.user.create');
     }
 

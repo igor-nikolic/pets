@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SendEmail;
+use App\Models\Breed;
 use App\Models\Company;
 use App\Models\Menu;
+use App\Models\Pet;
 use App\Models\Poll;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -26,6 +28,15 @@ class FrontendController extends Controller
 
     public function home()
     {
+        $pet = new Pet();
+        $pets = $pet->getRandomPets();
+        foreach($pets as $p){
+            $p->photo = $pet->getPhotoById($p->id);
+        }
+        $breed = new Breed();
+        $breeds = $breed->getRandomBreeds();
+        $this->data['breedData'] = $breeds;
+        $this->data['petsData'] = $pets;
         return view('pages.front.home', $this->data);
     }
 

@@ -12,6 +12,7 @@ use App\Models\PetPhoto;
 use App\Models\Photo;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class PetController extends Controller
 {
@@ -75,7 +76,8 @@ class PetController extends Controller
         $pet->father_id = $petFather;
         $pet->mother_id = $petMother;
         $pet->breed_id =  $request->input('petBreed');
-        $pet->user_id = $request->session()->get('user')->id;
+        $userId =  $request->session()->get('user')->user_id;
+        $pet->user_id = $userId;
         $petId = $pet->store();
         try{
             $photos = [];
@@ -94,10 +96,13 @@ class PetController extends Controller
                 $petPhoto->store();
                 $photos[$key]['pet_photo'] = $petPhoto;
             }
+            Log::info('User with id '.$userId." added a new pet with id ".$petId);
             $response = ['success'=>true,'message'=>'You have successfully added a pet','petId'=>$petId,'petGender'=>$pet->gender,'petName'=>$pet->name];
                 return json_encode($response);
         }catch (\Exception $e){
-            echo $e->getMessage();
+            $response = ['success'=>false,'message'=>'Error inserting new pet! Please try again!'];
+            Log::info('User with id '.$userId." failed to store a pet! Error message: ".$e->getMessage());
+            return json_encode($response);
         }
     }
 
